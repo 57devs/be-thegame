@@ -55,7 +55,7 @@ async def create_game(request):
 	DB().create_game(game_id, game_name, username)
 	DB().add_player(username, game_id)
 
-	return response.json(data)
+	return response.json(data, headers={'Access-Control-Allow-Origin': '*'})
 
 
 @app.route('/join/<game_id>', methods=['POST'])
