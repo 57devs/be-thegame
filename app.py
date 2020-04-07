@@ -1,13 +1,14 @@
 import asyncio
 
-
 from sanic import Sanic, response
+from sanic_cors import CORS
 
 from db import DB
 from utils import get_game_id
 
 db = {}
 app = Sanic(__name__)
+CORS(app)
 
 
 @app.route('/question/fill', methods=['GET', 'POST'])
@@ -55,7 +56,7 @@ async def create_game(request):
 	DB().create_game(game_id, game_name, username)
 	DB().add_player(username, game_id)
 
-	return response.json(data, headers={'Access-Control-Allow-Origin': '*'})
+	return response.json(data)
 
 
 @app.route('/join/<game_id>', methods=['POST'])
