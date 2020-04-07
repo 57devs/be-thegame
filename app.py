@@ -22,12 +22,13 @@ async def create_game(request):
 		username = data["username"]
 		game_name = data["game_name"]
 		num_of_questions = int(data["num_of_questions"])
+		difficulty = int(data["difficulty"])
 	except:
 		return response.json({'error': 'Bad Request'}, status=400)
 
 	if num_of_questions > 25:
 		return response.json({'error': 'Maximum question number is 25'})
-	questions = DB().get_questions(num_of_questions)
+	questions = DB().get_questions(num_of_questions, difficulty)
 	if not questions:
 		return response.json({'error': 'Could not retrieve the questions'})
 
@@ -55,7 +56,7 @@ async def create_game(request):
 	DB().create_game(game_id, game_name, username)
 	DB().add_player(username, game_id)
 
-	return response.json(data, headers={'Access-Control-Allow-Origin': '*'})
+	return response.json(data)
 
 
 @app.route('/join/<game_id>', methods=['POST'])
