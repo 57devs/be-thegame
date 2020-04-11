@@ -73,12 +73,15 @@ class DB(object):
 			f"SELECT * FROM games WHERE game_id=:game_id limit 1", {'game_id': game_id}
 		)
 
+		data = {}
 		game = game.fetchone()
-		game_id = game[0]
-		game_name = game[1]
-		created_by = game[2]
-		started = game[3]
-		data = {'game_id': game_id, 'game_name': game_name, 'created_by': created_by, 'started': started}
+		if game is not None:
+			game_id = game[0]
+			game_name = game[1]
+			created_by = game[2]
+			started = game[3]
+			data = {'game_id': game_id, 'game_name': game_name, 'created_by': created_by, 'started': started}
+
 		return data
 
 	def add_player(self, username, game_id):
