@@ -36,7 +36,7 @@ async def create_game(request):
 	game_id = get_game_id()
 	data['game_id'] = game_id
 
-	DB().create_game(game_id, game_name, username)
+	DB().create_game(game_id, game_name, username, questions)
 	DB().add_player(username, game_id)
 
 	return response.json(data)
