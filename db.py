@@ -6,7 +6,7 @@ connection = sqlite3.connect('db.db')
 cursor = connection.cursor()
 
 create_table = f"CREATE TABLE IF NOT EXISTS games(game_id TEXT UNIQUE, game_name TEXT, created_by TEXT, " \
-			   f"game_started INTEGER)"
+			   f"questions TEXT, game_started INTEGER)"
 cursor.execute(create_table)
 
 create_table = f"CREATE TABLE IF NOT EXISTS players(username TEXT, game_id TEXT," \
@@ -59,10 +59,11 @@ class DB(object):
 
 		return question_list
 
-	def create_game(self, game_id, game_name, created_by):
-		create_game = f"INSERT INTO games (game_id, game_name, created_by, game_started)" \
-					  f"VALUES ('{game_id}', '{game_name}', '{created_by}', 0)"
-		self.cursor.execute(create_game)
+	def create_game(self, game_id, game_name, created_by, questions):
+		param = [game_id, game_name, created_by, json.dumps(questions), 0]
+		self.cursor.execute(
+			f"INSERT INTO games (game_id, game_name, created_by, questions, game_started)"
+			f"VALUES (?,?,?,?,?)", param)
 		connection.commit()
 
 	def get_game(self, game_id):
@@ -76,8 +77,15 @@ class DB(object):
 			game_id = game[0]
 			game_name = game[1]
 			created_by = game[2]
-			started = game[3]
-			data = {'game_id': game_id, 'game_name': game_name, 'created_by': created_by, 'started': started}
+			questions = game[3]
+			started = game[4]
+			data = {
+				'game_id': game_id,
+				'game_name': game_name,
+				'created_by': created_by,
+				'questions': json.loads(questions),
+				'started': started
+			}
 
 		return data
 

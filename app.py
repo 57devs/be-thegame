@@ -32,24 +32,6 @@ async def create_game(request):
 	if not questions:
 		return response.json({'error': 'Could not retrieve the questions'})
 
-	data = {
-		'questions': []
-	}
-
-	for question in questions:
-		question_data = {
-			'question': question['title'],
-			'choices': {
-				'choice_a': question['choices'][0],
-				'choice_b': question['choices'][1],
-				'choice_c': question['choices'][2],
-				'choice_d': question['choices'][3]
-			},
-			'correct_choice': question['correct_choice'],
-			'difficulty': question['difficulty']
-		}
-		data['questions'].append(question_data)
-
 	game_id = get_game_id()
 	data['game_id'] = game_id
 
@@ -93,7 +75,8 @@ async def feed(request, ws, game_id):
 		data = {
 			'players': players,
 			'game_name': game['game_name'],
-			'created_by': game['created_by']
+			'created_by': game['created_by'],
+			'questions': game['questions']
 		}
 
 		await ws.send(response.json(data))
