@@ -1,5 +1,5 @@
-import sqlite3
 import json
+import sqlite3
 from builtins import object
 
 connection = sqlite3.connect('db.db')
@@ -29,10 +29,10 @@ class DB(object):
 		with open('questions.json') as questions:
 			questions = json.load(questions)
 			for question in questions:
-				title = json.dumps(question['q'])
+				title = question['q']
 				choices = json.dumps(question['c'])
-				correct_choice = json.dumps(question['co'])
-				difficulty = json.dumps(question['r'])
+				correct_choice = question['co']
+				difficulty = int(question['r'])
 				query = [title, choices, correct_choice, difficulty]
 
 				self.cursor.execute(f"INSERT INTO questions (title, choices, correct_choice, difficulty) "
@@ -41,15 +41,15 @@ class DB(object):
 
 	def get_questions(self, num_of_questions, difficulty):
 		get_questions = f"SELECT * FROM questions WHERE difficulty=:difficulty ORDER BY RANDOM() LIMIT '{num_of_questions}'"
-		question_db = self.cursor.execute(get_questions, {'difficulty': difficulty})
+		question_db = cursor.execute(get_questions, {'difficulty': difficulty})
 		questions = question_db.fetchall()
 		question_list = []
 
 		for question in questions:
-			title = json.loads(question[1])
+			title = question[1]
 			choices = json.loads(question[2])
-			correct_choice = json.loads(str(question[3]))
-			difficulty = json.loads(str(question[4]))
+			correct_choice = question[3]
+			difficulty = question[4]
 			question_list.append({
 				'title': title,
 				'choices': choices,
