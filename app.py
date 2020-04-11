@@ -23,12 +23,13 @@ async def create_game(request):
 		username = data["username"]
 		game_name = data["game_name"]
 		num_of_questions = int(data["num_of_questions"])
+		difficulty = int(data["difficulty"])
 	except:
 		return response.json({'error': 'Bad Request'}, status=400)
 
 	if num_of_questions > 25:
 		return response.json({'error': 'Maximum question number is 25'})
-	questions = DB().get_questions(num_of_questions)
+	questions = DB().get_questions(num_of_questions, difficulty)
 	if not questions:
 		return response.json({'error': 'Could not retrieve the questions'})
 

@@ -39,11 +39,12 @@ class DB(object):
 									f"VALUES (?,?,?,?)", query)
 				connection.commit()
 
-	def get_questions(self, num_of_questions):
-		get_questions = f"SELECT * FROM questions ORDER BY RANDOM() LIMIT '{num_of_questions}'"
-		question_db = self.cursor.execute(get_questions)
+	def get_questions(self, num_of_questions, difficulty):
+		get_questions = f"SELECT * FROM questions WHERE difficulty=:difficulty ORDER BY RANDOM() LIMIT '{num_of_questions}'"
+		question_db = self.cursor.execute(get_questions, {'difficulty': difficulty})
 		questions = question_db.fetchall()
 		question_list = []
+
 		for question in questions:
 			title = json.loads(question[1])
 			choices = json.loads(question[2])
@@ -56,7 +57,6 @@ class DB(object):
 				'difficulty': difficulty,
 			})
 
-		print(question_list)
 		return question_list
 
 	def create_game(self, game_id, game_name, created_by):
