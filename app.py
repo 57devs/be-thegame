@@ -1,13 +1,14 @@
 import asyncio
 
-
 from sanic import Sanic, response
+from sanic_cors import CORS
 
 from db import DB
 from utils import get_game_id
 
 db = {}
 app = Sanic(__name__)
+CORS(app)
 
 
 @app.route('/question/fill', methods=['GET', 'POST'])
