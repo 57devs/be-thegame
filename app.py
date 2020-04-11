@@ -1,3 +1,4 @@
+import json
 import asyncio
 
 from sanic import Sanic, response
@@ -80,7 +81,7 @@ async def feed(request, ws, game_id):
 			'questions': game['questions']
 		}
 
-		await ws.send(response.json(data))
+		await ws.send(json.dumps(data))
 		await asyncio.sleep(1)
 
 		game_started = await ws.recv()
