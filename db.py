@@ -126,14 +126,4 @@ class DB(object):
 
 
 if __name__ == '__main__':
-	DB().create_game('ABsC', 'burcuoyun', 'burcu')
-	print(DB().get_game('ABsC'))
-
-	DB().add_player('emircan', 'ABsC')
-	DB().add_player('yucehan', 'ABsC')
-	DB().add_player('ferhat', 'ABsC')
-
-	for player in DB().get_players_by_game_id('ABsC'):
-		print(player)
-
-	print(DB().get_game('ABsC'))
+	DB().fill_questions()
