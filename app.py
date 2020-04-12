@@ -66,6 +66,15 @@ async def join_game(request, game_id):
 	return response.json({'error': 'Bad Request'}, status=400)
 
 
+@app.route('/start-game/<game_id>', methods=['GET'])
+async def game_started(request, game_id):
+	game = DB().get_game(game_id)
+	if not game:
+		return response.json({'error': 'Game could not be found.'}, status=404)
+	DB().set_game_started(game_id)
+	return response.json({'success': 'Game ID: ' + game_id + ' is now marked as started'})
+
+
 @app.websocket('/ws/<game_id>')
 async def feed(request, ws, game_id):
 	game = DB().get_game(game_id)
@@ -78,7 +87,8 @@ async def feed(request, ws, game_id):
 			'players': players,
 			'game_name': game['game_name'],
 			'created_by': game['created_by'],
-			'questions': game['questions']
+			'questions': game['questions'],
+			'started': game['started']
 		}
 
 		await ws.send(json.dumps(data))
