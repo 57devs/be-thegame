@@ -83,7 +83,6 @@ async def feed(request, ws, game_id):
 	while True:
 
 		try:
-
 			await asyncio.wait_for(ws.recv(), timeout=0.1)
 			game_started = ws.recv()
 			if game_started:
@@ -92,7 +91,7 @@ async def feed(request, ws, game_id):
 			pass
 
 		players = DB().get_players_by_game_id(game_id)
-
+		game = DB().get_game(game_id)
 		data = {
 			'players': players,
 			'game_name': game['game_name'],
