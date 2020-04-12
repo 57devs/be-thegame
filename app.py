@@ -81,6 +81,16 @@ async def feed(request, ws, game_id):
 	if not game:
 		await ws.send(response.json({'error': 'game not found'}))
 	while True:
+
+		try:
+
+			await asyncio.wait_for(ws.recv(), timeout=0.1)
+			game_started = ws.recv()
+			if game_started:
+				DB().set_game_started(game_id)
+		except:
+			pass
+
 		players = DB().get_players_by_game_id(game_id)
 
 		data = {
