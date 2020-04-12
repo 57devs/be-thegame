@@ -84,9 +84,9 @@ async def feed(request, ws, game_id):
 		await ws.send(json.dumps(data))
 		await asyncio.sleep(1)
 
-		game_started = await ws.recv()
-		if game_started:
-			DB().set_game_started(game_id)
+		# game_started = await ws.recv()
+		# if game_started:
+		# 	DB().set_game_started(game_id)
 
 
 if __name__ == '__main__':
