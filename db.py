@@ -27,6 +27,15 @@ class DB(object):
 	def __init__(self):
 		self.cursor = connection.cursor()
 
+	def drop_tables(self):
+		self.cursor.execute(
+			f"DROP TABLE games"
+		)
+		self.cursor.execute(
+			f"DROP TABLE players"
+		)
+		connection.commit()
+
 	def fill_questions(self):
 		with open('questions.json') as questions:
 			questions = json.load(questions)
@@ -144,7 +153,8 @@ class DB(object):
 
 
 if __name__ == '__main__':
-	if sys.argv[1] == "tabloSil":
-		DB().drop_tables()
-	if sys.argv[1] == "soruDoldur":
-		DB().fill_questions()
+	if len(sys.argv) == 2:
+		if sys.argv[1] == "tabloSil":
+			DB().drop_tables()
+		if sys.argv[1] == "soruDoldur":
+			DB().fill_questions()
