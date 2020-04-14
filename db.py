@@ -1,3 +1,4 @@
+import sys
 import sqlite3
 import json
 from builtins import object
@@ -10,6 +11,7 @@ create_table = f"CREATE TABLE IF NOT EXISTS games(game_id TEXT UNIQUE, game_name
 cursor.execute(create_table)
 
 create_table = f"CREATE TABLE IF NOT EXISTS players(username TEXT, game_id TEXT," \
+			   f"score INTEGER, extras TEXT," \
 			   f"CONSTRAINT fk_game_id FOREIGN KEY (game_id) REFERENCES games(game_id)" \
 			   f"ON DELETE CASCADE)"
 cursor.execute(create_table)
@@ -46,11 +48,13 @@ class DB(object):
 		question_list = []
 
 		for question in questions:
+			q_id = question[0]
 			title = question[1]
 			choices = json.loads(question[2])
 			correct_choice = question[3]
 			difficulty = question[4]
 			question_list.append({
+				'q_id': q_id,
 				'title': title,
 				'choices': choices,
 				'correct_choice': correct_choice,
@@ -97,7 +101,7 @@ class DB(object):
 
 		if not player.fetchone():
 			self.cursor.execute(
-				f"INSERT INTO players (username, game_id) VALUES ('{username}', '{game_id}')"
+				f"INSERT INTO players (username, game_id) VALUES (?,?)", [username, game_id]
 			)
 			connection.commit()
 
@@ -116,11 +120,31 @@ class DB(object):
 
 	def set_game_started(self, game_id):
 		self.cursor.execute(
-			f"UPDATE games SET game_started = 1 WHERE game_id=:game_id",
+			f"UPDATE games SET game_started=1 WHERE game_id=:game_id",
 			{'game_id': game_id}
 		)
 		connection.commit()
 
+	def set_player_score(self, game_id, username, extras):
+		score = extras['total_score']
+		self.cursor.execute(
+			f"UPDATE players SET score=:score, extras=:extras "
+			f"WHERE game_id=:game_id AND username=:username",
+			{'score': score, 'extras': json.dumps(extras), 'game_id': game_id, 'username': username}
+		)
+		connection.commit()
+
+	def get_player_scores_by_game_id(self, game_id):
+		player_scores = self.cursor.execute(
+			f"SELECT username, score FROM players WHERE game_id=:game_id",
+			{'game_id': game_id}
+		)
+
+		return player_scores.fetchall()
+
 
 if __name__ == '__main__':
-	DB().fill_questions()
+	if sys.argv[1] == "tabloSil":
+		DB().drop_tables()
+	if sys.argv[1] == "soruDoldur":
+		DB().fill_questions()
