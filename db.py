@@ -1,3 +1,4 @@
+import sys
 import json
 import sqlite3
 from builtins import object
@@ -46,11 +47,13 @@ class DB(object):
 		question_list = []
 
 		for question in questions:
+			q_id = question[0]
 			title = question[1]
 			choices = json.loads(question[2])
 			correct_choice = question[3]
 			difficulty = question[4]
 			question_list.append({
+				'q_id': q_id,
 				'title': title,
 				'choices': choices,
 				'correct_choice': correct_choice,
