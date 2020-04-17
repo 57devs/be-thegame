@@ -75,6 +75,40 @@ async def game_started(request, game_id):
 	return response.json({'success': 'Game ID: ' + game_id + ' is now marked as started'})
 
 
+@app.route('/games/<game_id>/players/<player>/score', methods=['POST'])
+async def player_result(request, game_id, player):
+	try:
+		data = request.json
+	except:
+		return response.json({'error': 'Bad Request'}, status=400)
+
+	game = DB().get_game(game_id)
+	if not game:
+		return response.json({'error': 'Game not found.'}, status=404)
+
+	players = DB().get_players_by_game_id(game_id)
+	if player not in players:
+		return response.json({'error': 'Player not found'}, status=404)
+
+	DB().set_player_score(game_id, player, data)
+	return response.json({'success': 'Player score updated'}, status=200)
+
+
+@app.route('/games/<game_id>/scoreboard', methods=['GET'])
+async def game_result(request, game_id):
+	game = DB().get_game(game_id)
+	if not game:
+		return response.json({'error': 'Game not found.'}, status=404)
+
+	player_scores = DB().get_player_scores_by_game_id(game_id)
+	data = {'game_name': game['game_name'], 'created_by': game['created_by'], 'player_scores': []}
+
+	for username, score in player_scores:
+		data['player_scores'].append({username: score if score else 0})
+
+	return response.json(data)
+
+
 @app.websocket('/ws/<game_id>')
 async def feed(request, ws, game_id):
 	game = DB().get_game(game_id)
@@ -102,11 +136,6 @@ async def feed(request, ws, game_id):
 
 		await ws.send(json.dumps(data))
 		await asyncio.sleep(1)
-
-		# game_started = await ws.recv()
-		# if game_started:
-		# 	DB().set_game_started(game_id)
-
 
 if __name__ == '__main__':
 	app.run()
