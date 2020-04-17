@@ -30,6 +30,7 @@ async def create_game(request):
 
 	if num_of_questions > 25:
 		return response.json({'error': 'Maximum question number is 25'})
+
 	questions = DB().get_questions(num_of_questions, difficulty)
 	if not questions:
 		return response.json({'error': 'Could not retrieve the questions'})
@@ -59,6 +60,9 @@ async def join_game(request, game_id):
 		return response.json({'error': 'Game has already started.'}, status=403)  # 403 olur mu?
 
 	if username:
+		players = DB().get_players_by_game_id(game_id)
+		if username in players:
+			return response.json({'error': 'A user with that name already exists.'})
 		DB().add_player(username, game_id)
 
 		return response.json({'success': 'Player has joined.'})
