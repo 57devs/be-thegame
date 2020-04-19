@@ -13,7 +13,7 @@ def get_game_id(length=8):
 	)
 
 
-def soru_sayisi_ayarla(num_of_questions=10, difficulty=3):
+def calculate_num_of_q(num_of_questions=10, difficulty=3):
 
 	if difficulty == 1:
 		one = int((num_of_questions / 10) * 3)

@@ -31,9 +31,6 @@ async def create_game(request):
 	if difficulty not in (1, 3, 5):
 		return response.json({'error': 'Difficulty can only be 1 or 3 or 5.'})
 
-	if num_of_questions > 30:
-		return response.json({'error': 'Maximum question number is 30'})
-
 	if num_of_questions not in (10, 20, 30):
 		return response.json({'error': 'You can select 10 or 20 or 30 questions.'})
 

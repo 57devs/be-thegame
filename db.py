@@ -2,7 +2,7 @@ import sys
 import sqlite3
 import json
 from builtins import object
-from utils import soru_sayisi_ayarla
+from utils import calculate_num_of_q
 
 connection = sqlite3.connect('db.db')
 cursor = connection.cursor()
@@ -52,7 +52,7 @@ class DB(object):
 				connection.commit()
 
 	def get_questions(self, num_of_questions, difficulty):
-		num_of_q_by_difficulty = soru_sayisi_ayarla(num_of_questions, difficulty)
+		num_of_q_by_difficulty = calculate_num_of_q(num_of_questions, difficulty)
 		question_list = []
 
 		for index, num_of_q in num_of_q_by_difficulty:
