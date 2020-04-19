@@ -2,6 +2,7 @@ import sys
 import sqlite3
 import json
 from builtins import object
+from utils import soru_sayisi_ayarla
 
 connection = sqlite3.connect('db.db')
 cursor = connection.cursor()
@@ -51,24 +52,27 @@ class DB(object):
 				connection.commit()
 
 	def get_questions(self, num_of_questions, difficulty):
-		get_questions = f"SELECT * FROM questions WHERE difficulty=:difficulty ORDER BY RANDOM() LIMIT '{num_of_questions}'"
-		question_db = cursor.execute(get_questions, {'difficulty': difficulty})
-		questions = question_db.fetchall()
+		num_of_q_by_difficulty = soru_sayisi_ayarla(num_of_questions, difficulty)
 		question_list = []
 
-		for question in questions:
-			q_id = question[0]
-			title = question[1]
-			choices = json.loads(question[2])
-			correct_choice = question[3]
-			difficulty = question[4]
-			question_list.append({
-				'q_id': q_id,
-				'title': title,
-				'choices': choices,
-				'correct_choice': correct_choice,
-				'difficulty': difficulty,
-			})
+		for index, num_of_q in num_of_q_by_difficulty:
+			get_questions = f"SELECT * FROM questions WHERE difficulty=:difficulty ORDER BY RANDOM() LIMIT '{num_of_q}'"
+			question_db = cursor.execute(get_questions, {'difficulty': index})
+			questions = question_db.fetchall()
+
+			for question in questions:
+				q_id = question[0]
+				title = question[1]
+				choices = json.loads(question[2])
+				correct_choice = question[3]
+				difficulty = question[4]
+				question_list.append({
+					'q_id': q_id,
+					'title': title,
+					'choices': choices,
+					'correct_choice': correct_choice,
+					'difficulty': difficulty,
+				})
 
 		return question_list
 
