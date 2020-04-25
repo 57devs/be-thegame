@@ -113,7 +113,7 @@ async def game_result(request, game_id):
 	return response.json(data)
 
 
-@app.route('/games/<game_id>/players/<player>/ready')
+@app.route('/games/<game_id>/players/<player>/ready', methods=['POST'])
 async def ready_check(request, game_id, player):
 	try:
 		data = request.json
@@ -133,6 +133,16 @@ async def ready_check(request, game_id, player):
 
 	DB().set_player_ready(game_id, player, is_ready)
 	return response.json({'success': 'Player ready status updated'}, status=200)
+
+
+@app.route('/games/<game_id>/players/<player>/leave-game', methods=['GET'])
+async def leave_game(request, game_id, player):
+	game = DB().get_game(game_id)
+	if not game:
+		return response.json({'error': 'Game not found.'}, status=404)
+
+	DB().remove_player_from_game(game_id, player)
+	return response.json({'success': 'Player is removed from the game.'})
 
 
 @app.websocket('/games')

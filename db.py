@@ -171,6 +171,13 @@ class DB(object):
 		)
 		connection.commit()
 
+	def remove_player_from_game(self, game_id, username):
+		self.cursor.execute(
+			f"DELETE FROM players WHERE game_id=:game_id AND username=:username",
+			{'game_id': game_id, 'username': username}
+		)
+		connection.commit()
+
 
 if __name__ == '__main__':
 	if len(sys.argv) == 2:
