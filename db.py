@@ -7,7 +7,7 @@ connection = sqlite3.connect('db.db')
 cursor = connection.cursor()
 
 create_table = f"CREATE TABLE IF NOT EXISTS games(game_id TEXT UNIQUE, game_name TEXT, created_by TEXT, " \
-			   f"questions TEXT, game_started INTEGER)"
+			   f"questions TEXT, game_started INTEGER, game_ended INTEGER)"
 cursor.execute(create_table)
 
 create_table = f"CREATE TABLE IF NOT EXISTS players(username TEXT, game_id TEXT," \
@@ -134,6 +134,13 @@ class DB(object):
 		)
 		connection.commit()
 
+	def set_game_ended(self, game_id):
+		self.cursor.execute(
+			f"UPDATE games SET game_ended=1 WHERE game_id=:game_id",
+			{'game_id': game_id}
+		)
+		connection.commit()
+
 	def set_player_score(self, game_id, username, extras):
 		score = extras['total_score']
 		self.cursor.execute(
@@ -150,6 +157,12 @@ class DB(object):
 		)
 
 		return player_scores.fetchall()
+
+	def get_lobby_games(self):
+		lobby_games = self.cursor.execute(
+			f"SELECT * FROM games WHERE game_started=0 AND game_ended=0"
+		)
+		return lobby_games.fetchall()
 
 
 if __name__ == '__main__':

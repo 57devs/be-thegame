@@ -113,6 +113,14 @@ async def game_result(request, game_id):
 	return response.json(data)
 
 
+@app.websocket('/games')
+async def games(ws):
+	while True:
+		games = DB().get_lobby_games()
+		await ws.send(json.dumps(games))
+		await asyncio.sleep(1)
+
+
 @app.websocket('/ws/<game_id>')
 async def feed(request, ws, game_id):
 	game = DB().get_game(game_id)
@@ -122,9 +130,11 @@ async def feed(request, ws, game_id):
 
 		try:
 			await asyncio.wait_for(ws.recv(), timeout=0.1)
-			game_started = ws.recv()
-			if game_started:
+			data = ws.recv()
+			if data['game_started'] == 1:
 				DB().set_game_started(game_id)
+			if data['game_ended'] == 1:
+				DB().set_game_ended(game_id)
 		except:
 			pass
 
