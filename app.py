@@ -113,6 +113,28 @@ async def game_result(request, game_id):
 	return response.json(data)
 
 
+@app.route('/games/<game_id>/players/<player>/ready')
+async def ready_check(request, game_id, player):
+	try:
+		data = request.json
+		is_ready = data['is_ready']
+	except:
+		return response.json({'error': 'Bad Request'}, status=400)
+
+	game = DB().get_game(game_id)
+	if not game:
+		return response.json({'error': 'Game not found.'}, status=404)
+
+	players = DB().get_players_by_game_id(game_id)
+	if player not in players:
+		return response.json({'error': 'Player not found'}, status=404)
+
+	is_ready = 0 if is_ready == 0 else 1
+
+	DB().set_player_ready(game_id, player, is_ready)
+	return response.json({'success': 'Player ready status updated'}, status=200)
+
+
 @app.websocket('/games')
 async def games(ws):
 	while True:

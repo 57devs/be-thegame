@@ -11,7 +11,7 @@ create_table = f"CREATE TABLE IF NOT EXISTS games(game_id TEXT UNIQUE, game_name
 cursor.execute(create_table)
 
 create_table = f"CREATE TABLE IF NOT EXISTS players(username TEXT, game_id TEXT," \
-			   f"score INTEGER, extras TEXT," \
+			   f"score INTEGER, extras TEXT, is_ready INTEGER," \
 			   f"CONSTRAINT fk_game_id FOREIGN KEY (game_id) REFERENCES games(game_id)" \
 			   f"ON DELETE CASCADE)"
 cursor.execute(create_table)
@@ -163,6 +163,13 @@ class DB(object):
 			f"SELECT * FROM games WHERE game_started=0 AND game_ended=0"
 		)
 		return lobby_games.fetchall()
+
+	def set_player_ready(self, game_id, username, is_ready):
+		self.cursor.execute(
+			f"UPDATE players SET is_ready=:is_ready WHERE game_id=:game_id AND username=:username",
+			{'is_ready': is_ready, 'game_id': game_id, 'username': username}
+		)
+		connection.commit()
 
 
 if __name__ == '__main__':
