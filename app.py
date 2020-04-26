@@ -145,6 +145,26 @@ async def leave_game(request, game_id, player):
 	return response.json({'success': 'Player is removed from the game.'})
 
 
+@app.route('/games/<game_id>/start-game', methods=['GET'])
+async def start_game(request, game_id):
+	game = DB().get_game(game_id)
+	if not game:
+		return response.json({'error': 'Game not found.'}, status=404)
+
+	DB().set_game_started(game_id)
+	return response.json({'success': 'Game is marked as started.'})
+
+
+@app.route('/games/<game_id>/end-game', methods=['GET'])
+async def end_game(request, game_id):
+	game = DB().get_game(game_id)
+	if not game:
+		return response.json({'error': 'Game not found.'}, status=404)
+
+	DB().set_game_ended(game_id)
+	return response.json({'success': 'Game is marked as ended.'})
+
+
 @app.websocket('/games')
 async def games(ws):
 	while True:
@@ -158,18 +178,8 @@ async def feed(request, ws, game_id):
 	game = DB().get_game(game_id)
 	if not game:
 		await ws.send(response.json({'error': 'game not found'}))
+
 	while True:
-
-		try:
-			await asyncio.wait_for(ws.recv(), timeout=0.1)
-			data = ws.recv()
-			if data['game_started'] == 1:
-				DB().set_game_started(game_id)
-			if data['game_ended'] == 1:
-				DB().set_game_ended(game_id)
-		except:
-			pass
-
 		players = DB().get_players_by_game_id(game_id)
 		game = DB().get_game(game_id)
 		data = {
