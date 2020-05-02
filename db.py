@@ -6,26 +6,27 @@ from builtins import object
 connection = sqlite3.connect('db.db')
 cursor = connection.cursor()
 
-create_table = f"CREATE TABLE IF NOT EXISTS games(game_id TEXT UNIQUE, game_name TEXT, created_by TEXT, " \
-			   f"questions TEXT, game_started INTEGER, game_ended INTEGER)"
-cursor.execute(create_table)
-
-create_table = f"CREATE TABLE IF NOT EXISTS players(username TEXT, game_id TEXT," \
-			   f"score INTEGER, extras TEXT, is_ready INTEGER," \
-			   f"CONSTRAINT fk_game_id FOREIGN KEY (game_id) REFERENCES games(game_id)" \
-			   f"ON DELETE CASCADE)"
-cursor.execute(create_table)
-
-create_table = f"CREATE TABLE IF NOT EXISTS questions(" \
-			   f"question_id INTEGER PRIMARY KEY AUTOINCREMENT, " \
-			   f"title TEXT, choices TEXT, correct_choice INTEGER, " \
-			   f"difficulty INTEGER)"
-cursor.execute(create_table)
-
 
 class DB(object):
 	def __init__(self):
 		self.cursor = connection.cursor()
+
+	def create_tables(self):
+		create_table = f"CREATE TABLE IF NOT EXISTS games(game_id TEXT UNIQUE, game_name TEXT, created_by TEXT, " \
+					   f"questions TEXT, game_started INTEGER, game_ended INTEGER)"
+		self.cursor.execute(create_table)
+
+		create_table = f"CREATE TABLE IF NOT EXISTS players(username TEXT, game_id TEXT," \
+					   f"score INTEGER, extras TEXT, is_ready INTEGER," \
+					   f"CONSTRAINT fk_game_id FOREIGN KEY (game_id) REFERENCES games(game_id)" \
+					   f"ON DELETE CASCADE)"
+		self.cursor.execute(create_table)
+
+		create_table = f"CREATE TABLE IF NOT EXISTS questions(" \
+					   f"question_id INTEGER PRIMARY KEY AUTOINCREMENT, " \
+					   f"title TEXT, choices TEXT, correct_choice INTEGER, " \
+					   f"difficulty INTEGER)"
+		self.cursor.execute(create_table)
 
 	def drop_tables(self):
 		self.cursor.execute(
@@ -185,3 +186,5 @@ if __name__ == '__main__':
 			DB().drop_tables()
 		if sys.argv[1] == "soruDoldur":
 			DB().fill_questions()
+		if sys.argv[1] == "createTables":
+			DB().create_tables()
