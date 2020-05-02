@@ -162,7 +162,28 @@ class DB(object):
 		lobby_games = self.cursor.execute(
 			f"SELECT * FROM games WHERE game_started=0 AND game_ended=0"
 		)
-		return lobby_games.fetchall()
+
+		data = []
+		games = lobby_games.fetchall()
+		for game in games:
+			if game is not None:
+				game_id = game[0]
+				game_name = game[1]
+				created_by = game[2]
+				questions = game[3]
+				started = game[4]
+
+				game_data = {
+					'game_id': game_id,
+					'game_name': game_name,
+					'created_by': created_by,
+					'questions': json.loads(questions),
+					'started': started
+				}
+
+				data.append(game_data)
+
+		return data
 
 	def set_player_ready(self, game_id, username, is_ready):
 		self.cursor.execute(
