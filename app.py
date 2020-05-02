@@ -168,7 +168,23 @@ async def end_game(request, game_id):
 @app.websocket('/games')
 async def games(request, ws):
 	while True:
-		games = DB().get_lobby_games()
+		# games = DB().get_lobby_games()
+		games = {
+			[
+				{
+					'players': ['ahmet', 'mehmet', 'mahmut'],
+					'game_name': 'mahmutun Oyunu',
+					'created_by': 'Mahmut',
+					'difficulty': 3,
+				},
+				{
+					'players': ['ali', 'veli', 'mehmet'],
+					'game_name': 'alinin oyunu',
+					'created_by': 'ali',
+					'difficulty': 3,
+				},
+			]
+		}
 		await ws.send(json.dumps(games))
 		await asyncio.sleep(1)
 
