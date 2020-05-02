@@ -73,10 +73,10 @@ class DB(object):
 		return question_list
 
 	def create_game(self, game_id, game_name, created_by, questions):
-		param = [game_id, game_name, created_by, json.dumps(questions), 0]
+		param = [game_id, game_name, created_by, json.dumps(questions), 0, 0]
 		self.cursor.execute(
-			f"INSERT INTO games (game_id, game_name, created_by, questions, game_started)"
-			f"VALUES (?,?,?,?,?)", param)
+			f"INSERT INTO games (game_id, game_name, created_by, questions, game_started, game_ended)"
+			f"VALUES (?,?,?,?,?,?)", param)
 		connection.commit()
 
 	def get_game(self, game_id):
@@ -162,7 +162,6 @@ class DB(object):
 		lobby_games = self.cursor.execute(
 			f"SELECT * FROM games WHERE game_started=0 AND game_ended=0"
 		)
-
 		data = []
 		games = lobby_games.fetchall()
 		for game in games:
@@ -172,13 +171,15 @@ class DB(object):
 				created_by = game[2]
 				questions = game[3]
 				started = game[4]
+				ended = game[5]
 
 				game_data = {
 					'game_id': game_id,
 					'game_name': game_name,
 					'created_by': created_by,
 					'questions': json.loads(questions),
-					'started': started
+					'started': started,
+					'ended': ended
 				}
 
 				data.append(game_data)
