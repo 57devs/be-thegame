@@ -166,7 +166,7 @@ async def end_game(request, game_id):
 
 
 @app.websocket('/games')
-async def games(ws):
+async def games(request, ws):
 	while True:
 		games = DB().get_lobby_games()
 		await ws.send(json.dumps(games))
